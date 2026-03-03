@@ -36,7 +36,12 @@ Your wallet is created and you're ready to earn $AGENTIC!
 | Component | Description |
 |-----------|-------------|
 | `contracts/AgenticToken.sol` | $AGENTIC token with staking |
+| `contracts/AgentGateway.sol` | Agent contract interactions |
+| `contracts/AgentExtensions.sol` | Batch executor, safety, identity |
+| `contracts/AgentMarketplace.sol` | NFT marketplace for agents |
 | `node/agentic_node.py` | Full node + wallet software |
+| `substrate/agentic_runtime.py` | Full Python blockchain |
+| `openclaw/agentic/` | OpenClaw skill |
 | `whitepaper.md` | Full white paper |
 | `index.html` | Landing page |
 
@@ -52,13 +57,47 @@ Your wallet is created and you're ready to earn $AGENTIC!
 
 ---
 
-## 🏦 Launch on bankr.bot
+## 🏦 Bootstrapping with Bankr.bot
 
-The $AGENTIC token will launch on bankr.bot (Base) for:
-- Instant liquidity
-- Viral bootstrap
-- Fair launch
-- Auto-locking LP
+To fund development without VC:
+
+### Step 1: Launch Token via Bankr.bot
+
+**Via Twitter/X:**
+```
+@bankrbot deploy token with name Agentic Chain ticker $AGENTIC on base
+```
+
+**Via CLI:**
+```bash
+bankr launch --name "Agentic Chain" --symbol AGENTIC
+```
+
+### Step 2: Zero Cost
+
+- No gas fees upfront
+- Bankr.bot handles ERC-20 deployment
+- Auto-creates Uniswap v3 liquidity pool
+
+### Step 3: Fee Structure
+
+- **Pre-migration**: 0.5% to creator
+- **Post-migration**: 50% creator, 40% Bankr, 10% burn
+
+### Step 4: Bridge to Chain
+
+Use proceeds to fund:
+- Node hosting
+- Smart contract audits
+- Marketing
+- Agent API credits
+
+### Integration with Agentic Chain
+
+Bridge $AGENTIC/ETH/USDC to the chain via:
+- Base Native Bridge
+- CCTP (Circle)
+- LayerZero
 
 ---
 
@@ -73,11 +112,42 @@ The $AGENTIC token will launch on bankr.bot (Base) for:
 
 ---
 
-## 🔧 Development
+## 🤖 OpenClaw Integration
+
+Agents can directly interact with Agentic Chain:
+
+```javascript
+// Import skill
+const agentic = require('./openclaw/agentic');
+
+// Register identity
+await agentic.registerAgent("MyAgent", metadata);
+
+// Check rate limits
+const { allowed } = await agentic.checkRateLimit(agentAddress);
+
+// Batch execute
+await agentic.batchExecute([{target, data}, ...]);
+
+// Start node and earn
+const node = await agentic.startNode();
+```
+
+See [`openclaw/README.md`](./openclaw/README.md) for full documentation.
+
+---
+
+## 🛠️ Development
 
 ```bash
-# Run node
+# Run Python blockchain (test)
+python3 substrate/agentic_runtime.py
+
+# Run Base L2 node
 python3 node/agentic_node.py
+
+# Run node with wallet
+python3 node/agentic_node.py --create-wallet
 
 # Check balance
 python3 node/agentic_node.py --balance
@@ -88,3 +158,7 @@ python3 node/agentic_node.py --balance
 ## 📄 License
 
 MIT
+
+---
+
+*Built for the agent economy | 2026*
