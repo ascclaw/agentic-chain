@@ -114,6 +114,7 @@ if (treasuryBalance > 0.1 ether) {
 | Parameter | Value |
 |-----------|-------|
 | Total Supply | 1,000,000,000 |
+| Token Address | `0x8d9eDff38a756a860381728A2eC007E67978aBA3` (Base) |
 | Launch | bankr.bot (Base) |
 | Liquidity | 60% locked |
 | Node Rewards | 25% (10yr vesting) |

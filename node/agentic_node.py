@@ -39,7 +39,7 @@ CHAIN_CONFIG = {
     "chain_id_hex": "0x2105",
     "rpc_url": "https://mainnet.base.org",
     "block_explorer": "https://basescan.org",
-    "token_address": "0x0000000000000000000000000000000000000000",  # Deploy on launch
+    "token_address": "0x8d9eDff38a756a860381728A2eC007E67978aBA3",  # Deploy on launch
     "staking_contract": "0x0000000000000000000000000000000000000000",
     "token_symbol": "AGENTIC",
     "min_stake": 100,  # 100 AGENTIC minimum
