@@ -29,7 +29,7 @@ from eth_account import Account
 from eth_typing import ChecksumAddress
 from web3 import Web3
 from web3.eth import Eth
-from web3.middleware.geth import construct_local_filter_middleware
+from web3.middleware.filter import local_filter_middleware
 from web3.gas_strategies.time_based import medium_gas_price_strategy
 
 # Configuration
@@ -70,19 +70,28 @@ class BaseChain:
     def create_account(self) -> Dict[str, str]:
         """Create new wallet"""
         acct = Account.create()
+        # In eth_account >= 0.13, key is HexBytes
+        private_key = acct.key.hex() if hasattr(acct.key, 'hex') else acct.key.to_bytes().hex()
+        # Get public key from the account
+        from eth_keys import KeyAPI
+        keys = KeyAPI()
+        pub_key = keys.PrivateKey(acct.key).public_key
         return {
             "address": acct.address,
-            "private_key": acct.key.hex(),
-            "public_key": acct.key.public_key.hex()
+            "private_key": private_key,
+            "public_key": pub_key.to_hex()
         }
     
     def import_account(self, private_key: str) -> Dict[str, str]:
         """Import existing wallet"""
         acct = Account.from_key(private_key)
+        from eth_keys import KeyAPI
+        keys = KeyAPI()
+        pub_key = keys.PrivateKey(acct.key).public_key
         return {
             "address": acct.address,
-            "private_key": acct.key.hex(),
-            "public_key": acct.key.public_key.hex()
+            "private_key": private_key,
+            "public_key": pub_key.to_hex()
         }
     
     async def get_balance(self, address: str) -> Dict[str, Any]:
