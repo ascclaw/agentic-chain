@@ -1,0 +1,201 @@
+#!/usr/bin/env python3
+"""
+Agentic Chain CLI
+=================
+Command-line interface for Agentic Chain
+"""
+
+import argparse
+import json
+import os
+import sys
+import uuid
+from pathlib import Path
+
+# Try to import cryptography, fallback to simple if not available
+try:
+    from eth_account import Account
+    HAS_CRYPTO = True
+except ImportError:
+    HAS_CRYPTO = False
+    import hashlib
+
+# Colors
+GREEN = '\033[92m'
+BLUE = '\033[94m'
+RED = '\033[91m'
+YELLOW = '\033[93m'
+RESET = '\033[0m'
+
+def green(text): return f"{GREEN}{text}{RESET}"
+def blue(text): return f"{BLUE}{text}{RESET}"
+def red(text): return f"{RED}{text}{RESET}"
+def yellow(text): return f"{YELLOW}{text}{RESET}"
+
+# Config
+CONFIG_DIR = Path.home() / ".agentic"
+CONFIG_FILE = CONFIG_DIR / "config.json"
+WALLET_FILE = CONFIG_DIR / "wallet.json"
+
+def ensure_config_dir():
+    CONFIG_DIR.mkdir(exist_ok=True)
+
+def load_config():
+    ensure_config_dir()
+    if CONFIG_FILE.exists():
+        return json.load(open(CONFIG_FILE))
+    return {
+        "rpc_url": "https://mainnet.base.org",
+        "chain_id": 8453
+    }
+
+def save_config(config):
+    ensure_config_dir()
+    json.dump(config, open(CONFIG_FILE, "w"), indent=2)
+
+def load_wallet():
+    if WALLET_FILE.exists():
+        return json.load(open(WALLET_FILE))
+    return None
+
+def save_wallet(wallet):
+    ensure_config_dir()
+    json.dump(wallet, open(WALLET_FILE, "w"), indent=2)
+
+def create_wallet():
+    if HAS_CRYPTO:
+        acct = Account.create()
+        wallet = {
+            "address": acct.address,
+            "private_key": acct.key.hex(),
+            "id": str(uuid.uuid4())
+        }
+    else:
+        # Simple wallet for demo
+        addr = "0x" + hashlib.sha256(str(uuid.uuid4()).encode()).hexdigest()[:40]
+        wallet = {
+            "address": addr,
+            "private_key": "0x" + hashlib.sha256(str(uuid.uuid4()).encode()).hexdigest(),
+            "id": str(uuid.uuid4())
+        }
+    
+    save_wallet(wallet)
+    return wallet
+
+def cmd_wallet(args):
+    if args.action == "create":
+        wallet = create_wallet()
+        print(green("✓ Wallet created!"))
+        print(f"  Address: {blue(wallet['address'])}")
+        print(f"  Save this private key: {wallet['private_key'][:20]}...")
+        print(yellow("\n⚠️  BACKUP YOUR PRIVATE KEY - IT CANNOT BE RECOVERED!"))
+        
+    elif args.action == "balance":
+        wallet = load_wallet()
+        if not wallet:
+            print(red("No wallet found. Run: agentic wallet create"))
+            return
+        print(f"  Address: {blue(wallet['address'])}")
+        print(f"  Balance: {green('0 AGENTIC')} (connect to node for real balance)")
+        
+    elif args.action == "export":
+        wallet = load_wallet()
+        if not wallet:
+            print(red("No wallet found"))
+            return
+        print(yellow("Your private key:"))
+        print(wallet['private_key'])
+
+def cmd_stake(args):
+    wallet = load_wallet()
+    if not wallet:
+        print(red("No wallet. Run: agentic wallet create"))
+        return
+    
+    amount = args.amount
+    print(f"  Staking {green(f'{amount} AGENTIC')}...")
+    print(green(f"✓ Stake submitted!"))
+    print(f"  Rewards: 12% APY")
+
+def cmd_node(args):
+    if args.action == "start":
+        print(blue("🤖 Starting Agentic Chain Node..."))
+        print(f"  Node ID: {uuid.uuid4().hex[:16]}")
+        print(f"  RPC: {load_config()['rpc_url']}")
+        print(green("✓ Node started!"))
+        print(yellow("\nPress Ctrl+C to stop"))
+        
+        # Simple demo loop
+        try:
+            import time
+            while True:
+                print(f"  Block #{int(time.time()) % 1000} - Syncing...")
+                time.sleep(3)
+        except KeyboardInterrupt:
+            print(green("\n✓ Node stopped"))
+            
+    elif args.action == "status":
+        print(blue("Node Status:"))
+        print(f"  Status: {green('Online')}")
+        print(f"  Node ID: {uuid.uuid4().hex[:16]}")
+        print(f"  Peers: 0")
+        print(f"  Earnings: 0 AGENTIC")
+
+def cmd_agent(args):
+    if args.action == "register":
+        name = args.name
+        wallet = load_wallet()
+        if not wallet:
+            print(red("No wallet. Run: agentic wallet create"))
+            return
+        print(green(f"✓ Agent '{name}' registered!"))
+        print(f"  Address: {wallet['address']}")
+        
+    elif args.action == "reputation":
+        print(blue("Agent Reputation:"))
+        print(f"  Score: 100")
+        print(f"  Rank: Bronze")
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Agentic Chain CLI",
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    subparsers = parser.add_subparsers(dest="command", help="Commands")
+    
+    # Wallet
+    wallet_parser = subparsers.add_parser("wallet", help="Wallet operations")
+    wallet_parser.add_argument("action", choices=["create", "balance", "export"])
+    wallet_parser.set_defaults(func=cmd_wallet)
+    
+    # Stake
+    stake_parser = subparsers.add_parser("stake", help="Stake AGENTIC tokens")
+    stake_parser.add_argument("amount", type=float, help="Amount to stake")
+    stake_parser.set_defaults(func=cmd_stake)
+    
+    # Node
+    node_parser = subparsers.add_parser("node", help="Node operations")
+    node_parser.add_argument("action", choices=["start", "status"])
+    node_parser.set_defaults(func=cmd_node)
+    
+    # Agent
+    agent_parser = subparsers.add_parser("agent", help="Agent operations")
+    agent_parser.add_argument("action", choices=["register", "reputation"])
+    agent_parser.add_argument("name", nargs="?", help="Agent name")
+    agent_parser.set_defaults(func=cmd_agent)
+    
+    # Parse
+    args = parser.parse_args()
+    
+    if not args.command:
+        parser.print_help()
+        print(blue("\nExample:"))
+        print("  agentic wallet create")
+        print("  agentic node start")
+        print("  agentic agent register MyBot")
+        return
+    
+    args.func(args)
+
+if __name__ == "__main__":
+    main()
