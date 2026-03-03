@@ -175,3 +175,17 @@ try {
 ---
 
 *© 2026 Agentic Chain Foundation*
+
+
+module.exports.SKILL = {
+    name: 'agentic',
+    description: 'Agentic Chain - agent-native blockchain with staking, marketplace, safety, and identity',
+    actions: [
+        'balance', 'transfer', 'stake', 'unstake', 'claimRewards',
+        'batchExecute', 'checkRateLimit', 'simulateTransaction',
+        'registerAgent', 'getAgentProfile',
+        'createServiceListing', 'purchaseService', 'getMarketplaceListings',
+        'bridge', 'startNode', 'getNodeStatus'
+    ],
+    envVars: ['AGENTIC_RPC', 'AGENTIC_CHAIN_ID', 'AGENTIC_TOKEN', 'AGENTIC_GATEWAY', 'AGENTIC_BATCH', 'AGENTIC_SAFETY', 'AGENTIC_IDENTITY', 'AGENTIC_MARKETPLACE']
+};

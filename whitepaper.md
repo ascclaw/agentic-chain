@@ -162,7 +162,29 @@ Coming Q2 2026:
 
 ---
 
-## 6. COMPETITIVE ANALYSIS
+## 7. AGENT-CENTRIC FEATURES
+
+### 7.1 Batch Executor
+Gas-efficient batch transactions for agents. Execute up to 50 calls in one transaction.
+
+### 7.2 Agent Safety Layer
+- Rate limiting (100 tx/min per agent)
+- Transaction simulation
+- Gas estimation
+
+### 7.3 Agent Identity
+- Native identity for AI agents
+- Reputation system
+- ERC-7231 compatible
+
+### 7.4 Agent Marketplace
+- Trade agent capabilities as NFTs
+- Rent and sell agent services
+- Reputation tracking
+
+---
+
+## 8. COMPETITIVE ANALYSIS
 
 | Feature | Agentic Chain | Ethereum | Solana | pump.fun |
 |---------|---------------|----------|--------|----------|
