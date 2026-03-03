@@ -1,0 +1,20 @@
+{
+  "name": "agentic",
+  "version": "1.0.0",
+  "description": "OpenClaw skill for Agentic Chain - interact with the blockchain, stake tokens, run nodes",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "keywords": [
+    "blockchain",
+    "agentic",
+    "staking",
+    "openclaw"
+  ],
+  "author": "Agentic Chain Foundation",
+  "license": "MIT",
+  "dependencies": {
+    "ethers": "^6.0.0"
+  }
+}
